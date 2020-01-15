@@ -83,18 +83,33 @@ router.get("/:id/posts", validateUserId, (req, res) => {
 
 router.delete("/:id", validateUserId, (req, res) => {
 	// do your magic!
+	Users.remove(req.params.id)
+		.then(result => {
+			if (result) {
+				res.status(200).json(req.user);
+			}
+		})
+		.catch(err => {
+			res.status(500).json({ message: "error" });
+		});
 });
 
-router.put("/:id", validateUserId, (req, res) => {
-	// do your magic!
+router.put("/:id", validateUserId, validateUser, (req, res) => {
+	Users.update(req.params.id, req.body)
+		.then(result => {
+			if (result) {
+				res.status(200).json(req.body);
+			}
+		})
+		.catch(err => {
+			res.status(500).json({ message: "error" });
+		});
 });
 
 //custom middleware
 
 function validateUserId(req, res, next) {
 	// do your magic!
-	console.log("validate user id");
-	console.log(typeof req.params.id);
 
 	if (new RegExp(/^\d+$/).test(req.params.id) !== true) {
 		res.status(500).json({ message: "Invalid user ID" });
